@@ -3,6 +3,24 @@
 
 import sys
 from time import sleep
+import struct
+from collections import deque
+
+
+DOUBLE_SIZE = 8  # 8 bytes for double
+
+class MovingAverage:
+    def __init__(self, size: int):
+        self.size = size
+        self.queue = deque()
+        self.sum = 0.0
+
+    def next(self, val: int) -> float:
+        self.queue.append(val)
+        self.sum += val
+        if len(self.queue) > self.size:
+            self.sum -= self.queue.popleft()
+        return self.sum / len(self.queue)
 
 
 # streams is a list of tuples (window_length, input_file, output_file)
