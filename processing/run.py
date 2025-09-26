@@ -25,7 +25,17 @@ class MovingAverage:
 
 # streams is a list of tuples (window_length, input_file, output_file)
 def process_streams(streams):
-    pass
+    print(f"Processing {len(streams)} streams")
+    for win_len, infile, outfile in streams:
+        ma = MovingAverage(win_len)  # Initialize moving average
+        while True:
+            chunk = infile.read(DOUBLE_SIZE)
+            if len(chunk) < DOUBLE_SIZE:
+                print("End of stream")
+                break
+            value = struct.unpack('<d', chunk)[0]  # little-endian double
+            avg_value = ma.next(value)
+            print(avg_value)
 
 
 if __name__ == "__main__":
