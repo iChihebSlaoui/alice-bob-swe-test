@@ -1,13 +1,13 @@
 # TODO: modify this file as necessary, to implement the moving average
 #  and process incoming data to the appropriate destination
 
-import sys
-from time import sleep
 import struct
+import sys
 from collections import deque
-
+from time import sleep
 
 DOUBLE_SIZE = 8  # 8 bytes for double
+
 
 class MovingAverage:
     def __init__(self, size: int):
@@ -33,7 +33,7 @@ def process_streams(streams):
             if len(chunk) < DOUBLE_SIZE:
                 print("End of stream")
                 break
-            value = struct.unpack('<d', chunk)[0]  # little-endian double
+            value = struct.unpack("<d", chunk)[0]  # little-endian double
             avg_value = ma.next(value)
             print(avg_value)
 
