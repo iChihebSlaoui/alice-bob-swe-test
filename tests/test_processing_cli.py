@@ -136,5 +136,6 @@ class AdvancedTests(_BaseTestClass):
         for i in (1, 2):
             self.assertTrue(filecmp.cmp(f"{OUT_DATA}{i}", REF_OUT_DATA, shallow=False))
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

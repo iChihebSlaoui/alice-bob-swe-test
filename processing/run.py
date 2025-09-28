@@ -4,8 +4,8 @@
 import struct
 import sys
 from collections import deque
-from time import sleep
 from concurrent.futures import ProcessPoolExecutor
+from time import sleep
 
 DOUBLE_SIZE = 8  # 8 bytes for double
 
@@ -68,7 +68,6 @@ def process_stdin_streams(win_len, stream, outfilename):
             outfile.write(struct.pack("<d", avg_value))
     if close_outfile:
         outfile.close()
-    
 
 
 if __name__ == "__main__":
