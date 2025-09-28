@@ -10,7 +10,7 @@ window size, we want to compute the *(central) moving average* of the data:
 
 ```
 input data:                     2.    2.    2.    5.    4.
-output (moving avg, window=3):        2.    3.    3.666
+output (moving avg, window=3):              2.    3.    3.666
 ```
 
 You are given a data stream through [named pipes](https://en.wikipedia.org/wiki/Named_pipe).
