@@ -51,12 +51,38 @@ def process_single_stream(args):
     outfile.close()
 
 
+def process_stdin_streams(win_len, stream, outfilename):
+    if outfilename == "-":
+        outfile = sys.stdout.buffer
+    else:
+        outfile = open(outfilename, "wb")
+    ma = MovingAverage(win_len)  # Initialize moving average
+    while True:
+        chunk = stream.read(DOUBLE_SIZE)
+        if len(chunk) < DOUBLE_SIZE:
+            break
+        value = struct.unpack("<d", chunk)[0]  # little-endian double
+        avg_value = ma.next(value)
+        if avg_value is not None:
+            outfile.write(struct.pack("<d", avg_value))
+    outfile.close()
+    
+
+
 if __name__ == "__main__":
     stream_params = []
     sleep(0.01)  # TODO: a bit hacky, wait a bit for the first stream to be available
+    # why need the sleep? To ensure that the input streams are ready before processing
+    # is there a better way to do this?
+
     for arg in sys.argv[1:]:
         win_len, infilename, outfilename = arg.split(",")
-        stream_params.append((int(win_len), infilename, outfilename))
+        if infilename == "-":
+            process_stdin_streams(int(win_len), sys.stdin.buffer, outfilename)
+        else:
+            stream_params.append((int(win_len), infilename, outfilename))
+
+    # # is there a better way than ProcessPoolExecutor?
     with ProcessPoolExecutor() as pool:
         pool.map(process_single_stream, stream_params)
         pool.shutdown()

@@ -84,19 +84,19 @@ class BasicTests(_BaseTestClass):
         self.assertEqual(process.poll(), 0)
         self.assertTrue(filecmp.cmp(OUT_DATA, REF_OUT_DATA, shallow=False))
 
-    # def test_stdout_stdin(self):
-    #     process = subprocess.run(
-    #         shlex.split(datastream("-")), stdout=subprocess.PIPE, check=True
-    #     )
-    #     with open(OUT_DATA, "w") as f:
-    #         subprocess.run(
-    #             shlex.split(f"{PROCESS} 3,-,-"),
-    #             input=process.stdout,
-    #             stdout=f,
-    #             check=True,
-    #         )
+    def test_stdout_stdin(self):
+        process = subprocess.run(
+            shlex.split(datastream("-")), stdout=subprocess.PIPE, check=True
+        )
+        with open(OUT_DATA, "w") as f:
+            subprocess.run(
+                shlex.split(f"{PROCESS} 3,-,-"),
+                input=process.stdout,
+                stdout=f,
+                check=True,
+            )
 
-    #     self.assertTrue(filecmp.cmp(OUT_DATA, REF_OUT_DATA, shallow=False))
+        self.assertTrue(filecmp.cmp(OUT_DATA, REF_OUT_DATA, shallow=False))
 
 
 class AdvancedTests(_BaseTestClass):
