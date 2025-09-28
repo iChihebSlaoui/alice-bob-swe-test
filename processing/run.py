@@ -22,14 +22,13 @@ class MovingAverage:
         if len(self.queue) > self.size:
             self.sum -= self.queue.popleft()
         elif len(self.queue) < self.size:
-            return 0.0
+            return None
         return self.sum / len(self.queue)
 
 
 # streams is a list of tuples (window_length, input_file, output_file)
 def process_single_stream(args):
     win_len, infilename, outfilename = args
-    print(f"Processing stream with window length {win_len}, input {infilename}, output {outfilename}")
     if infilename == "-":
         infile = sys.stdin.buffer
     else:
@@ -46,7 +45,8 @@ def process_single_stream(args):
             break
         value = struct.unpack("<d", chunk)[0]  # little-endian double
         avg_value = ma.next(value)
-        outfile.write(struct.pack("<d", avg_value))
+        if avg_value is not None:
+            outfile.write(struct.pack("<d", avg_value))
     infile.close()
     outfile.close()
 
