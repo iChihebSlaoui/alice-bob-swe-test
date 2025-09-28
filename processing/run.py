@@ -106,4 +106,4 @@ if __name__ == "__main__":
                 break
             stream_params = next_round
             retries -= 1
-            sleep(2)
+            sleep(0.01)
