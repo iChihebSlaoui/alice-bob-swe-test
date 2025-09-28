@@ -1,23 +1,21 @@
-import sys
 import struct
+import sys
 
 DOUBLE_SIZE = 8  # 8 bytes for double
 
-def encode_file():
-    if len(sys.argv) < 2:
-        print("Usage: encode_binary.py inputfile outputfile")
-        sys.exit(1)
 
-    infile = sys.argv[1]
-    outfile = sys.argv[2]
-    with open(infile, "r") as f:
-        values = [float(x) for x in f.read().strip().split()]
-        f.close()
-
-    with open(outfile, "wb") as f:
+def encode_file(stream):
+    values = [float(x) for x in stream.read().strip().split()]
+    if len(sys.argv) <= 1:
         for v in values:
-            f.write(struct.pack("<d", v))
-        f.close()
+            sys.stdout.buffer.write(struct.pack("<d", v))
+    else:
+        outfile = sys.argv[1]
+        with open(outfile, "wb") as outfile:
+            for v in values:
+                outfile.write(struct.pack("<d", v))
+            outfile.close()
+
 
 if __name__ == "__main__":
-    encode_file()
+    encode_file(sys.stdin.buffer)
