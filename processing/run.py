@@ -21,6 +21,8 @@ class MovingAverage:
         self.sum += val
         if len(self.queue) > self.size:
             self.sum -= self.queue.popleft()
+        elif len(self.queue) < self.size:
+            return 0.0
         return self.sum / len(self.queue)
 
 
