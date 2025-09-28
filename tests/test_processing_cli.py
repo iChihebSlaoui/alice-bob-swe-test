@@ -100,30 +100,29 @@ class BasicTests(_BaseTestClass):
 
 
 class AdvancedTests(_BaseTestClass):
-    # def test_multiple_right_order(self):
+    def test_multiple_right_order(self):
+        process = subprocess.Popen(
+            shlex.split(datastream(f"{TMP_PIPE}1", f"{TMP_PIPE}2"))
+        )
+        subprocess.run(
+            shlex.split(f"{PROCESS} {_arg(1)} {_arg(2)}"),
+            check=True,
+        )
+        self.assertEqual(process.poll(), 0)
+        for i in (1, 2):
+            self.assertTrue(filecmp.cmp(f"{OUT_DATA}{i}", REF_OUT_DATA, shallow=False))
+
+    # def test_multiple_invert_order(self):
     #     process = subprocess.Popen(
     #         shlex.split(datastream(f"{TMP_PIPE}1", f"{TMP_PIPE}2"))
     #     )
-    #     print(f"***************{PROCESS} {_arg(1)} {_arg(2)}***************")
     #     subprocess.run(
-    #         shlex.split(f"{PROCESS} {_arg(1)} {_arg(2)}"),
+    #         shlex.split(f"{PROCESS} {_arg(2)} {_arg(1)}"),
     #         check=True,
     #     )
     #     self.assertEqual(process.poll(), 0)
     #     for i in (1, 2):
     #         self.assertTrue(filecmp.cmp(f"{OUT_DATA}{i}", REF_OUT_DATA, shallow=False))
-
-#     def test_multiple_invert_order(self):
-#         process = subprocess.Popen(
-#             shlex.split(datastream(f"{TMP_PIPE}1", f"{TMP_PIPE}2"))
-#         )
-#         subprocess.run(
-#             shlex.split(f"{PROCESS} {_arg(2)} {_arg(1)}"),
-#             check=True,
-#         )
-#         self.assertEqual(process.poll(), 0)
-#         for i in (1, 2):
-#             self.assertTrue(filecmp.cmp(f"{OUT_DATA}{i}", REF_OUT_DATA, shallow=False))
 
     def test_multiple_parallel(self):
         process = subprocess.Popen(
