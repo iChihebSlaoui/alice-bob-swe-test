@@ -94,12 +94,16 @@ if __name__ == "__main__":
             pool.map(process_single_stream, stream_params)
             pool.shutdown()
     else:
-        for stream in stream_params:
-            retries = 5
-            while retries > 0:
+        retries = 5
+        while retries > 0 and stream_params:
+            next_round = []
+            for stream in stream_params:
                 try:
                     process_single_stream(stream)
-                    break
                 except FileNotFoundError:
-                    retries -= 1
-                    sleep(2)
+                    next_round.append(stream)
+            if not next_round:
+                break
+            stream_params = next_round
+            retries -= 1
+            sleep(2)
