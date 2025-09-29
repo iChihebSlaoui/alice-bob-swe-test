@@ -1,6 +1,3 @@
-# TODO: modify this file as necessary, to implement the moving average
-#  and process incoming data to the appropriate destination
-
 import struct
 import sys
 from collections import deque
@@ -26,48 +23,34 @@ class MovingAverage:
         return self.sum / len(self.queue)
 
 
-# streams is a list of tuples (window_length, input_file, output_file)
+def process_stream(win_len, instream, outfilename):
+    if outfilename == "-":
+        outfile = sys.stdout.buffer
+        close_outfile = False
+    else:
+        outfile = open(outfilename, "wb")
+        close_outfile = True
+    ma = MovingAverage(win_len)
+    while True:
+        chunk = instream.read(DOUBLE_SIZE)
+        if len(chunk) < DOUBLE_SIZE:
+            break
+        value = struct.unpack("<d", chunk)[0]
+        avg_value = ma.next(value)
+        if avg_value is not None:
+            outfile.write(struct.pack("<d", avg_value))
+    if close_outfile:
+        outfile.close()
+
+
 def process_single_stream(args):
     win_len, infilename, outfilename = args
-    infile = open(infilename, "rb")
-    if outfilename == "-":
-        outfile = sys.stdout.buffer
-        close_outfile = False
-    else:
-        outfile = open(outfilename, "wb")
-        close_outfile = True
-    ma = MovingAverage(win_len)  # Initialize moving average
-    while True:
-        chunk = infile.read(DOUBLE_SIZE)
-        if len(chunk) < DOUBLE_SIZE:
-            break
-        value = struct.unpack("<d", chunk)[0]  # little-endian double
-        avg_value = ma.next(value)
-        if avg_value is not None:
-            outfile.write(struct.pack("<d", avg_value))
-    infile.close()
-    if close_outfile:
-        outfile.close()
+    with open(infilename, "rb") as infile:
+        process_stream(win_len, infile, outfilename)
 
 
-def process_stdin_streams(win_len, stream, outfilename):
-    if outfilename == "-":
-        outfile = sys.stdout.buffer
-        close_outfile = False
-    else:
-        outfile = open(outfilename, "wb")
-        close_outfile = True
-    ma = MovingAverage(win_len)  # Initialize moving average
-    while True:
-        chunk = stream.read(DOUBLE_SIZE)
-        if len(chunk) < DOUBLE_SIZE:
-            break
-        value = struct.unpack("<d", chunk)[0]  # little-endian double
-        avg_value = ma.next(value)
-        if avg_value is not None:
-            outfile.write(struct.pack("<d", avg_value))
-    if close_outfile:
-        outfile.close()
+def process_stdin_stream(win_len, stream, outfilename):
+    process_stream(win_len, stream, outfilename)
 
 
 if __name__ == "__main__":
@@ -84,7 +67,7 @@ if __name__ == "__main__":
     for arg in args:
         win_len, infilename, outfilename = arg.split(",")
         if infilename == "-":
-            process_stdin_streams(int(win_len), sys.stdin.buffer, outfilename)
+            process_stdin_stream(int(win_len), sys.stdin.buffer, outfilename)
         else:
             stream_params.append((int(win_len), infilename, outfilename))
 
